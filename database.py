@@ -21,7 +21,7 @@ def obtener_productos(termino: str) -> list:
         SELECT DISTINCT producto 
         FROM productos 
         WHERE LOWER(producto) LIKE LOWER(?) 
-        LIMIT 10  # Evita demasiados botones
+        LIMIT 10
     """, (f"%{termino}%",))
     
     productos = [row[0] for row in cursor.fetchall()]
