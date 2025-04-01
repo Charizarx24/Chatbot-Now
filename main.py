@@ -50,7 +50,7 @@ async def buscar_productos(termino: str):
                     "text": f"📌 Coincidencias para '{termino}':",
                     "buttons": [
                         {
-                            "type": "text",
+                            "type": "node",
                             "caption": producto,
                             "target": "flujo_seleccion_producto"  # Nombre de tu flujo siguiente
                         } for producto in productos_validos
