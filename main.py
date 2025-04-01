@@ -43,6 +43,7 @@ async def buscar_productos(termino: str):
     return {
         "version": "v2",
         "content": {
+            "type": "instagram",
             "messages": [
                 {
                     "type": "text",
@@ -76,4 +77,3 @@ async def buscar_farmacias(
         "producto": producto_normalizado,
         "farmacias": resultado if resultado else "No encontrado"
     }
-
