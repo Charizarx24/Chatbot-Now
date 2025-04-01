@@ -41,19 +41,22 @@ async def buscar_productos(termino: str):
     
     # Estructura para ManyChat (Dynamic Content)
     return {
-        "messages": [
-            {
-                "type": "text",
-                "text": f"📌 Coincidencias para '{termino}':",
-                "buttons": [
-                    {
-                        "type": "text",
-                        "caption": producto,
-                        "target": "flujo_seleccion_producto"  # Nombre de tu flujo siguiente
-                    } for producto in productos_validos
-                ]
-            }
-        ]
+        "version": "v2",
+        "content": {
+            "messages": [
+                {
+                    "type": "text",
+                    "text": f"📌 Coincidencias para '{termino}':",
+                    "buttons": [
+                        {
+                            "type": "text",
+                            "caption": producto,
+                            "target": "flujo_seleccion_producto"  # Nombre de tu flujo siguiente
+                        } for producto in productos_validos
+                    ]
+                }
+            ]
+        }
     }
 
 @app.get("/buscar-farmacias")
