@@ -52,7 +52,7 @@ async def buscar_productos(termino: str):
                         {
                             "type": "node",
                             "caption": producto,
-                            "target": "flujo_seleccion_producto"  # Nombre de tu flujo siguiente
+                            "target": f"flujo_seleccion_producto?producto={producto}"  # Nombre de tu flujo siguiente
                         } for producto in productos_validos
                     ]
                 }
