@@ -31,6 +31,7 @@ async def validar_estado(
         #"estados_validos": estados_validos if not es_valido else None  # Opcional: enviar lista si es inválido
     }
 
+@app.get("/buscar-productos")
 async def buscar_productos(termino: str):
     conn = sqlite3.connect('farmacias.db')
     cursor = conn.cursor()
