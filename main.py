@@ -14,21 +14,33 @@ app.add_middleware(
 # Endpoint para validar estados
 @app.get("/validar-estado")
 async def validar_estado(
-    estado: str = Query(..., alias="estado")
+    termino: str = Query(..., alias="estado")
 ):
     # Normaliza el input
-    estado_normalizado = estado.upper().strip()
+    estado_normalizado = termino.upper().strip()
     
     # Consulta a la base de datos
-    estados_validos = database.obtener_estados()
+    estados_validos = database.obtener_estados(estado_normalizado)
     
-    # Verifica si el estado existe
-    es_valido = estado_normalizado in estados_validos
-    
+    # Estructura para ManyChat (Dynamic Content)
     return {
-        "estado_ingresado": estado,
-        "es_valido": es_valido
-        #"estados_validos": estados_validos if not es_valido else None  # Opcional: enviar lista si es inválido
+        "version": "v2",
+        "content": {
+            "type": "instagram",
+            "messages": [
+                {
+                    "type": "text",
+                    "text": f"📌 Coincidencias para '{termino}':",
+                }
+            ],
+            "quick_replies": [
+                {
+                    "type": "node",
+                    "caption": f"{estado}",
+                    "target": "flujo_seleccion_estado" # Nombre de tu flujo siguiente
+                } for estado in estados_validos
+            ]
+        }
     }
 
 @app.get("/buscar-productos")
@@ -75,5 +87,5 @@ async def buscar_farmacias(
     return {
         "estado": estado_normalizado,
         "producto": producto_normalizado,
-        "farmacias": "\n".join([f"• {f}" for f in resultado]) if resultado else False
+        "farmacias": "".join([f"\n• {f}" for f in resultado]) if resultado else False
     }
