@@ -1,12 +1,18 @@
 # database.py
 import sqlite3
 
-def obtener_estados() -> list:
-    """Devuelve una lista de estados únicos registrados en la DB"""
+def obtener_estados(estado: str) -> list:
+    """Devuelve una lista de estados que coincidan con el termino de busqueda"""
     conn = sqlite3.connect('farmacias.db')
     cursor = conn.cursor()
     
-    cursor.execute('SELECT DISTINCT estado FROM productos')
+    cursor.execute("""
+    SELECT DISTINCT estado
+    FROM productos
+    WHERE LOWER(estado)
+    LIKE LOWER(?)
+    LIMIT 10
+    """, (f"%{estado}%",))
     estados = [row[0] for row in cursor.fetchall()]
     
     conn.close()
