@@ -48,14 +48,14 @@ async def buscar_productos(termino: str):
                 {
                     "type": "text",
                     "text": f"📌 Coincidencias para '{termino}':",
-                    "buttons": [
-                        {
-                            "type": "node",
-                            "caption": producto,
-                            "target": f"flujo_seleccion_producto"  # Nombre de tu flujo siguiente
-                        } for producto in productos_validos
-                    ]
                 }
+            ],
+            "quick_replies": [
+                {
+                    "type": "node",
+                    "caption": f"{producto}",
+                    "target": "flujo_seleccion_producto" # Nombre de tu flujo siguiente
+                } for producto in productos_validos
             ]
         }
     }
@@ -77,5 +77,3 @@ async def buscar_farmacias(
         "producto": producto_normalizado,
         "farmacias": resultado if resultado else "No encontrado"
     }
-
-#Run app local uvicorn main:app
