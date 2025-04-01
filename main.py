@@ -75,5 +75,5 @@ async def buscar_farmacias(
     return {
         "estado": estado_normalizado,
         "producto": producto_normalizado,
-        "farmacias": resultado if resultado else "No encontrado"
+        "farmacias": resultado if resultado else False
     }
