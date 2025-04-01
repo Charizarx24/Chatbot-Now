@@ -31,6 +31,38 @@ async def validar_estado(
         #"estados_validos": estados_validos if not es_valido else None  # Opcional: enviar lista si es inválido
     }
 
+async def buscar_productos(termino: str):
+    conn = sqlite3.connect('farmacias.db')
+    cursor = conn.cursor()
+    
+    # Búsqueda parcial (ejemplo con LIKE de SQL)
+    cursor.execute("""
+        SELECT DISTINCT producto 
+        FROM productos 
+        WHERE LOWER(producto) LIKE LOWER(?) 
+        LIMIT 10  # Evita demasiados botones
+    """, (f"%{termino}%",))
+    
+    productos = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    
+    # Estructura para ManyChat (Dynamic Content)
+    return {
+        "messages": [
+            {
+                "type": "text",
+                "text": f"📌 Coincidencias para '{termino}':",
+                "buttons": [
+                    {
+                        "type": "text",
+                        "caption": producto,
+                        "target": "flujo_seleccion_producto"  # Nombre de tu flujo siguiente
+                    } for producto in productos
+                ]
+            }
+        ]
+    }
+
 @app.get("/buscar-farmacias")
 async def buscar_farmacias(
     estado: str = Query(..., alias="estado"),
