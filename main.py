@@ -89,3 +89,5 @@ async def buscar_farmacias(
         "producto": producto_normalizado,
         "farmacias": "".join([f"\n• {f}" for f in resultado]) if resultado else False
     }
+
+#Run app local -> uvicorn main:app

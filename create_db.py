@@ -27,6 +27,7 @@ cursor.executemany(
     datos_ejemplo
 )
 
+
 # Guardar cambios y cerrar conexión
 conn.commit()
 conn.close()

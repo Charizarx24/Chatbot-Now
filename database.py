@@ -7,9 +7,9 @@ def obtener_estados(estado: str) -> list:
     cursor = conn.cursor()
     
     cursor.execute("""
-    SELECT DISTINCT estado
-    FROM productos
-    WHERE LOWER(estado)
+    SELECT DISTINCT city
+    FROM Farmacias
+    WHERE LOWER(city)
     LIKE LOWER(?)
     LIMIT 10
     """, (f"%{estado}%",))
@@ -24,9 +24,9 @@ def obtener_productos(termino: str) -> list:
     
     # Búsqueda parcial (ejemplo con LIKE de SQL)
     cursor.execute("""
-        SELECT DISTINCT producto 
+        SELECT DISTINCT name 
         FROM productos 
-        WHERE LOWER(producto) LIKE LOWER(?) 
+        WHERE LOWER(name) LIKE LOWER(?) 
         LIMIT 10
     """, (f"%{termino}%",))
     
@@ -37,13 +37,33 @@ def obtener_productos(termino: str) -> list:
 def buscar_en_datos(estado: str, producto: str) -> list:
     conn = sqlite3.connect("farmacias.db")
     cursor = conn.cursor()
-    
+    # Obtener el id del producto
     cursor.execute("""
-        SELECT farmacias FROM productos 
-        WHERE estado = ? AND producto = ?
-    """, (estado, producto))
-    
-    resultado = cursor.fetchone()
+        SELECT id FROM productos WHERE LOWER(name) = LOWER(?)
+    """, (f"{producto}",))
+    producto_row = cursor.fetchone()
+    if not producto_row:
+        conn.close()
+        return []
+    id_producto = producto_row[0]
+
+    # Obtener los id_farmacia que tienen ese producto
+    cursor.execute("""
+        SELECT id_farmacia FROM farmaciaxproducto WHERE id_producto = ?
+    """, (id_producto,))
+    farmacia_ids = [row[0] for row in cursor.fetchall()]
+    if not farmacia_ids:
+        conn.close()
+        return []
+
+    # Buscar farmacias en ese estado con esos id
+    placeholders = ",".join("?" for _ in farmacia_ids)
+    query = f"""
+        SELECT name FROM farmacias
+        WHERE id IN ({placeholders}) AND LOWER(city) = LOWER(?)
+    """
+    cursor.execute(query, (*farmacia_ids, estado))
+    farmacias = [row[0] for row in cursor.fetchall()]
+
     conn.close()
-    
-    return resultado[0].split(", ") if resultado else None
+    return farmacias
