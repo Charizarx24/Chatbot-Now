@@ -59,11 +59,11 @@ def buscar_en_datos(estado: str, producto: str) -> list:
     # Buscar farmacias en ese estado con esos id
     placeholders = ",".join("?" for _ in farmacia_ids)
     query = f"""
-        SELECT name FROM farmacias
+        SELECT name, contact FROM farmacias
         WHERE id IN ({placeholders}) AND LOWER(city) = LOWER(?)
     """
     cursor.execute(query, (*farmacia_ids, estado))
-    farmacias = [row[0] for row in cursor.fetchall()]
+    farmacias = [(row[0], row[1]) for row in cursor.fetchall()]
 
     conn.close()
     return farmacias

@@ -22,6 +22,28 @@ async def validar_estado(
     # Consulta a la base de datos
     estados_validos = database.obtener_estados(estado_normalizado)
     
+    if not estados_validos:
+        # No se encontraron estados válidos
+        return {
+            "version": "v2",
+            "content": {
+                "type": "instagram",
+                "messages": [
+                    {
+                        "type": "text",
+                        "text": f"❌ No se encontraron existencias para '{termino}'. Por favor, intenta nuevamente.",
+                    }
+                ],
+                "quick_replies": [
+                    {
+                        "type": "node",
+                        "caption": "Volver a intentar",
+                        "target": "flujo_enviar_ciudad"
+                    }
+                ]
+            }
+        }
+    
     # Estructura para ManyChat (Dynamic Content)
     return {
         "version": "v2",
@@ -50,6 +72,28 @@ async def buscar_productos(termino: str):
     
     # Consulta a la base de datos
     productos_validos = database.obtener_productos(producto_normalizado)
+    
+    if not productos_validos:
+        # No se encontraron productos
+        return {
+            "version": "v2",
+            "content": {
+                "type": "instagram",
+                "messages": [
+                    {
+                        "type": "text",
+                        "text": f"❌ No se encontraron existencias para '{termino}'. Por favor, intenta nuevamente.",
+                    }
+                ],
+                "quick_replies": [
+                    {
+                        "type": "node",
+                        "caption": "Volver a intentar",
+                        "target": "flujo_enviar_producto"
+                    }
+                ]
+            }
+        }
     
     # Estructura para ManyChat (Dynamic Content)
     return {
@@ -84,10 +128,19 @@ async def buscar_farmacias(
     # Busca en la "base de datos" (Google Sheets, CSV, etc.)
     resultado = database.buscar_en_datos(estado_normalizado, producto_normalizado)
     
+    # Se espera que resultado sea una lista de diccionarios con 'name' y 'contact'
+    farmacias_formateadas = ""
+    if resultado:
+        farmacias_formateadas = "".join([
+            f"\n• Nombre de farmacia:\n{f[0]}\nContacto:\n{f[1]}\n" for f in resultado
+        ])
+    else:
+        farmacias_formateadas = False
+
     return {
         "estado": estado_normalizado,
         "producto": producto_normalizado,
-        "farmacias": "".join([f"\n• {f}" for f in resultado]) if resultado else False
+        "farmacias": farmacias_formateadas
     }
 
 #Run app local -> uvicorn main:app
